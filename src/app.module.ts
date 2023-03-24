@@ -17,7 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigModule.forRoot(),
     RedisModule.forRoot({
       config: {
-        url: 'redis://localhost:6379',
+        url: process.env.REDIS_HOST,
       },
     }),
     MongooseModule.forRoot(process.env.DB_HOST),
