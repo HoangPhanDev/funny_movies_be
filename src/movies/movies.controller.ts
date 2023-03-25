@@ -19,12 +19,16 @@ import {
   getUnLikeKeyRedis,
   getUserReactionState,
 } from './utils';
+import { JwtService } from '@nestjs/jwt';
 
-@UseGuards(AccessTokenGuard)
 @Controller('movies')
 export class MoviesController {
-  constructor(private readonly moviesService: MoviesService) {}
+  constructor(
+    private readonly moviesService: MoviesService,
+    private jwtService: JwtService,
+  ) {}
 
+  @UseGuards(AccessTokenGuard)
   @Post()
   async shareMovie(
     @Request() req: RequestWithUser,
@@ -44,17 +48,36 @@ export class MoviesController {
 
     return this.moviesService.create(createMovieDto);
   }
+
   @Get()
   async findAll(
     @Request() req: RequestWithUser,
     @Query() { skip, limit }: PaginationParams,
   ) {
+    const jwtToken = req?.cookies?.Authentication;
+    let userId;
+    if (jwtToken) {
+      const tokenDecoded: any = this.jwtService.decode(jwtToken);
+      userId = tokenDecoded.id;
+    }
+
     const response = await this.moviesService.findAll(skip, limit);
     const { results } = response;
+
+    if (!userId) {
+      results.forEach(async (post) => {
+        post.like_count = 0;
+        post.unlike_count = 0;
+      });
+      return {
+        result: results,
+        count: response.count,
+      };
+    }
     const postIds = results.map((p) => p._id.toString());
     const statusByPostIds = await this.moviesService.getUserReactionByPostIds(
       postIds,
-      req.user._id,
+      userId,
     );
 
     results.forEach(async (post) => {
@@ -69,6 +92,7 @@ export class MoviesController {
     };
   }
 
+  @UseGuards(AccessTokenGuard)
   @Post('like')
   async likeVideo(
     @Request() req: RequestWithUser,
@@ -138,6 +162,7 @@ export class MoviesController {
     };
   }
 
+  @UseGuards(AccessTokenGuard)
   @Post('unlike')
   async unLikeVideo(
     @Request() req: RequestWithUser,

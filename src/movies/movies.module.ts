@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Movie, MovieSchema } from './schema/movies.schema';
 import { HttpModule } from '@nestjs/axios';
 import { UserReaction, UserReactionSchema } from './schema/reactions.schema';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { UserReaction, UserReactionSchema } from './schema/reactions.schema';
     ]),
   ],
   controllers: [MoviesController],
-  providers: [MoviesService],
+  providers: [MoviesService, JwtService],
 })
 export class MoviesModule {}

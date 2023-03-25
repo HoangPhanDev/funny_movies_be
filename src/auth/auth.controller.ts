@@ -65,9 +65,16 @@ export class AuthController {
     @Body() authData: AuthDto,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const user = await this.usersService.findOne({ email: authData.email });
+    let user;
+
+    user = await this.usersService.findOne({ email: authData.email });
     if (!user) {
-      throw new BadRequestException('User not found');
+      const saltOrRounds = 10;
+      const hashedPassword = await bcrypt.hash(authData.password, saltOrRounds);
+      user = await this.usersService.create({
+        ...authData,
+        password: hashedPassword,
+      });
     }
 
     const passwordValid = await bcrypt.compare(
@@ -80,7 +87,7 @@ export class AuthController {
     }
 
     const tokens = await this.authService.getTokens({
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
     });
 
@@ -90,9 +97,7 @@ export class AuthController {
     const rfTokenCookie = this.authService.getCookieWithRfJwtToken(
       tokens.refresh_token,
     );
-
     resp.setHeader('Set-Cookie', [accessTokenCookie, rfTokenCookie]);
-
     await this.authService.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }
@@ -106,7 +111,7 @@ export class AuthController {
     const user = req.user;
 
     const tokens = await this.authService.getTokens({
-      id: user.id.toString(),
+      id: user._id.toString(),
       email: user.email,
     });
 

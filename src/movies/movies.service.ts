@@ -162,7 +162,7 @@ export class MoviesService {
           new: true,
         },
       );
-    }, 5000);
+    }, 3000);
 
     this.scheduleRegistry.addTimeout(postId, updateLikeCountTimeoutId);
   }

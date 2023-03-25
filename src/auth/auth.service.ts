@@ -71,16 +71,16 @@ export class AuthService {
 
   public getCookieForLogOut() {
     return [
-      'Authentication=; HttpOnly; Path=/; Max-Age=0',
-      'Refresh=; HttpOnly; Path=/; Max-Age=0',
+      'Authentication=; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=0',
     ];
   }
 
   public getCookieWithJwtToken(token: string) {
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=6480`;
+    return `Authentication=${token}; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=6480`;
   }
 
   public getCookieWithRfJwtToken(token: string) {
-    return `Refresh=${token}; HttpOnly; Path=/; Max-Age=6480`;
+    return `Refresh=${token}; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=6480`;
   }
 }
