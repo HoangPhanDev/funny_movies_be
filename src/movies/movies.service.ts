@@ -76,7 +76,7 @@ export class MoviesService {
       .find()
       .sort({ _id: -1 })
       .populate({
-        path: 'sharer like_count',
+        path: 'sharer',
         select: {
           email: 1,
         },
@@ -91,7 +91,7 @@ export class MoviesService {
     return { results, count };
   }
 
-  async getUserStatusLikeByPostIds(postIds: string[], userId: string) {
+  async getUserReactionByPostIds(postIds: string[], userId: string) {
     const data = await Promise.all(
       postIds.map(async (postId) => {
         const userReactionKey = getUserReactionKeyRedis(postId, userId);

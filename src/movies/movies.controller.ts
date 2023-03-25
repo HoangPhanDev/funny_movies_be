@@ -52,7 +52,7 @@ export class MoviesController {
     const response = await this.moviesService.findAll(skip, limit);
     const { results } = response;
     const postIds = results.map((p) => p._id.toString());
-    const statusByPostIds = await this.moviesService.getUserStatusLikeByPostIds(
+    const statusByPostIds = await this.moviesService.getUserReactionByPostIds(
       postIds,
       req.user._id,
     );
@@ -113,7 +113,7 @@ export class MoviesController {
       );
     }
 
-    const userReactionState = getUserReactionState(
+    const userReactionStateUpdate = getUserReactionState(
       userReactionStateCurrent,
       UserReactionState.Like,
     );
@@ -121,13 +121,13 @@ export class MoviesController {
     await this.moviesService.updateUserReactionToRedis({
       postId: postId,
       userId: req.user._id,
-      status: userReactionState,
+      status: userReactionStateUpdate,
     });
 
     await this.moviesService.updateUserReactionToDB({
       postId: postId,
       userId: req.user._id,
-      status: userReactionState,
+      status: userReactionStateUpdate,
     });
 
     await this.moviesService.updateUserReactionStateTimeout(postId);
@@ -182,7 +182,7 @@ export class MoviesController {
       );
     }
 
-    const userReactionState = getUserReactionState(
+    const userReactionStateUpdate = getUserReactionState(
       userReactionStateCurrent,
       UserReactionState.UnLike,
     );
@@ -190,13 +190,13 @@ export class MoviesController {
     await this.moviesService.updateUserReactionToRedis({
       postId: postId,
       userId: req.user._id,
-      status: userReactionState,
+      status: userReactionStateUpdate,
     });
 
     await this.moviesService.updateUserReactionToDB({
       postId: postId,
       userId: req.user._id,
-      status: userReactionState,
+      status: userReactionStateUpdate,
     });
 
     await this.moviesService.updateUserReactionStateTimeout(postId);
