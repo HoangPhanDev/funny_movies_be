@@ -7,7 +7,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
   app.use(cookieParser());
-  app.enableCors({ credentials: true, origin: 'https://localhost:3002' });
+  app.enableCors({
+    credentials: true,
+    origin: [
+      'https://localhost:3002',
+      'https://funny-movies-fe-production.up.railway.app',
+    ],
+  });
 
   await app.listen(process.env.PORT || 3000);
 }
