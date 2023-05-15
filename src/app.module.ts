@@ -9,6 +9,7 @@ import { MoviesModule } from './movies/movies.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     AuthModule,
     MoviesModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -20,12 +20,14 @@ import {
   getUserReactionState,
 } from './utils';
 import { JwtService } from '@nestjs/jwt';
+import { MainGateway } from 'src/socket/main.gateway';
 
 @Controller('movies')
 export class MoviesController {
   constructor(
     private readonly moviesService: MoviesService,
     private jwtService: JwtService,
+    private readonly mainGateway: MainGateway,
   ) {}
 
   @UseGuards(AccessTokenGuard)
@@ -45,7 +47,9 @@ export class MoviesController {
       url,
       sharer: req.user._id,
     };
-
+    this.mainGateway.server
+      .to('share:new')
+      .emit('share', { data: createMovieDto });
     return this.moviesService.create(createMovieDto);
   }
 
