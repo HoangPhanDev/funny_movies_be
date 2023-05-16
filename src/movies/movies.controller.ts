@@ -49,7 +49,7 @@ export class MoviesController {
     };
     this.mainGateway.server
       .to('share:new')
-      .emit('share', { data: createMovieDto });
+      .emit('share:new-movie', { movie: createMovieDto, user: req.user });
     return this.moviesService.create(createMovieDto);
   }
 

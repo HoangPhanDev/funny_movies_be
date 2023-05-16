@@ -17,12 +17,14 @@ import { AuthDto } from './dto/auth.dto';
 import { RefreshTokenGuard } from './guard/refreshToken.guard';
 import { RequestWithUser } from './types';
 import { AccessTokenGuard } from './guard/accessToken.guard';
+import { MainGateway } from 'src/socket/main.gateway';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly mainGateway: MainGateway,
   ) {}
 
   @Post('register')
@@ -132,6 +134,9 @@ export class AuthController {
   ) {
     await this.authService.clearRfTokenDB(req.user.id);
     resp.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
+    this.mainGateway.server
+      .to(req.user._id.toString())
+      .socketsLeave('share:new');
     return { data: 'logout successfully' };
   }
 }

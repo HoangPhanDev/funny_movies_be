@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MainGateway } from './main.gateway';
-import { UsersModule } from 'src/users/users.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [],
-  imports: [UsersModule],
+  imports: [forwardRef(() => AuthModule)],
   providers: [MainGateway],
   exports: [MainGateway],
 })

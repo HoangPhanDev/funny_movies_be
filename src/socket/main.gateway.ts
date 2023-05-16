@@ -9,6 +9,9 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
+import { parse } from 'cookie';
+import { AuthService } from 'src/auth/auth.service';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -17,7 +20,7 @@ import { UsersService } from 'src/users/users.service';
 })
 export class MainGateway implements OnGatewayConnection {
   constructor(
-    private readonly userService: UsersService,
+    private readonly authService: AuthService,
     private scheduleRegistry: SchedulerRegistry,
   ) {}
   @WebSocketServer()
@@ -33,12 +36,15 @@ export class MainGateway implements OnGatewayConnection {
 
     socket.on('auth', async (data, ack) => {
       try {
-        const user = await this.userService.findById(data.id);
+        const user = await this.authService.getUserFromAuthenticationToken(
+          data.token,
+        );
+
         if (!user) {
           socket.disconnect();
         }
         ack && ack(user);
-        socket.join([user.id]);
+        socket.join([user.id, 'share:new']);
         this.scheduleRegistry.deleteTimeout(socket.id);
       } catch {
         socket.disconnect();

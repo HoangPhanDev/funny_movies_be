@@ -9,6 +9,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get('me')
   async getMe(@Request() req: RequestWithUser) {
-    return req.user;
+    return { ...req.user, token: req.cookies['Authentication'] };
   }
 }

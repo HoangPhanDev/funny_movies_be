@@ -61,6 +61,15 @@ export class AuthService {
     return user;
   }
 
+  public async getUserFromAuthenticationToken(token: string) {
+    const payload = this.jwtService.verify(token, {
+      secret: jwtConstants.jwt_access_secret,
+    });
+    if (payload.id) {
+      return this.usersService.findById(payload.id);
+    }
+  }
+
   async verifyUserWidthId(userId: string) {
     const user = await this.usersService.findById(userId);
     if (!user) {
