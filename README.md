@@ -8,7 +8,7 @@ just install yarn and nodejs currently version
 
 #### Installation & Configuration:
 
-run
+- install node-modules
 
 ```bash
 yarn
